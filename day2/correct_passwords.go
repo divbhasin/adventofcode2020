@@ -38,7 +38,27 @@ func verify(line string) bool {
 	return count >= lo && count <= hi
 }
 
-func parseInput(fileName string) int {
+func verify2(line string) bool {
+	count_char, password := split(line, ":")
+	rang, char := split(count_char, " ")
+	c1_str, c2_str := split(rang, "-")
+	c1, err1 := strconv.Atoi(c1_str)
+	c2, err2 := strconv.Atoi(c2_str)
+
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+
+	c1res := (string(password[c1]) == char)
+	c2res := (string(password[c2]) == char)
+
+	return c1res != c2res
+}
+
+func parseInput(fileName string, part string) int {
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -48,16 +68,26 @@ func parseInput(fileName string) int {
 	scanner := bufio.NewScanner(file)
 	valid := 0
 	for scanner.Scan() {
-		res := verify(scanner.Text())
+		res := false
+		if part == "part1" {
+			res = verify(scanner.Text())
+		} else {
+			res = verify2(scanner.Text())
+		}
+
 		if res {
 			valid++
 		}
+
 	}
 
 	return valid
 }
 
 func main() {
-	ans := parseInput("input.txt")
+	ans := parseInput("input.txt", "part1")
+	fmt.Println(ans)
+
+	ans = parseInput("input.txt", "part2")
 	fmt.Println(ans)
 }
