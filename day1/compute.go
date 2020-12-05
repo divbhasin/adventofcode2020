@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -30,6 +31,8 @@ func readFile(name string) []int {
 
 func main() {
 	nums := readFile("input.txt")
+
+	// part 1
 	m := make(map[int]bool)
 
 	for _, elem := range nums {
@@ -38,5 +41,27 @@ func main() {
 		}
 
 		m[elem] = true
+	}
+
+	// part 2
+	sort.Ints(nums)
+
+	for i := 0; i < len(nums)-2; i++ {
+		j := 0
+		k := len(nums) - 1
+
+		target := 2020 - nums[i]
+
+		for j < k {
+			if nums[j]+nums[k] == target {
+				fmt.Println(nums[j] * nums[k] * nums[i])
+				j++
+				k--
+			} else if nums[j]+nums[k] < target {
+				j++
+			} else {
+				k--
+			}
+		}
 	}
 }
