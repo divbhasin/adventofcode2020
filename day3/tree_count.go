@@ -27,18 +27,18 @@ func parseMap(fileName string) [][]string {
 	return board
 }
 
-func computeTrees(terrain [][]string) int {
+func computeTrees(terrain [][]string, slope [2]int) int {
 	m, n := len(terrain), len(terrain[0])
 	j := 0
 	trees := 0
 
-	for i := 0; i < m; i++ {
+	for i := 0; i < m; i += slope[0] {
 		item := terrain[i][j%n]
 		if item == "#" {
 			trees += 1
 		}
 
-		j += 3
+		j += slope[1]
 	}
 
 	return trees
@@ -46,6 +46,19 @@ func computeTrees(terrain [][]string) int {
 
 func main() {
 	terrain := parseMap("input.txt")
-	trees := computeTrees(terrain)
+
+	// Part 1
+	slope := [2]int{1, 3}
+	trees := computeTrees(terrain, slope)
 	fmt.Println(trees)
+
+	// Part 2
+	slopes := [5][2]int{[2]int{1, 1}, [2]int{1, 3}, [2]int{1, 5}, [2]int{1, 7}, [2]int{2, 1}}
+	prod := 1
+
+	for _, slop := range slopes {
+		prod *= computeTrees(terrain, slop)
+	}
+
+	fmt.Println(prod)
 }
