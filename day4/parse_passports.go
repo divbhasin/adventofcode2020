@@ -47,14 +47,24 @@ func parsePassports(fileName string) []map[string]string {
 	return passports
 }
 
-func validateField(key string, val string) bool {
+func validateField(key string, val string) (bool, error) {
 	if key == "byr" {
 		return regexp.MatchString("^19[2-9|0][0-9]|200[0-2]$", val)
 	} else if key == "iyr" {
 		return regexp.MatchString("^201[0-9]|2020$", val)
 	} else if key == "eyr" {
 		return regexp.MatchString("^202[0-9]|2030$", val)
+	} else if key == "hgt" {
+		return regexp.MatchString("^1([5-8][0-9]|9[0-3])cm|^(59|[6][0-9]|[7][0-6])in$", val)
+	} else if key == "hcl" {
+		return regexp.MatchString("^#([0-9]|[a-f]){6}$", val)
+	} else if key == "ecl" {
+		return regexp.MatchString("^(amb|blu|brn|gry|grn|hzl|oth)$", val)
+	} else if key == "pid" {
+		return regexp.MatchString("^[0-9]{9}$", val)
 	}
+
+	return true, nil
 }
 
 func howManyValid(passports []map[string]string) int {
@@ -68,8 +78,13 @@ func howManyValid(passports []map[string]string) int {
 				currValid = false
 				break
 			} else {
-				currValid = validateField(key, val)
-				if currValid == false {
+				valid, err := validateField(key, val)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				if !valid {
+					currValid = false
 					break
 				}
 			}
