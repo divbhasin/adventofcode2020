@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -41,7 +42,19 @@ func parsePassports(fileName string) []map[string]string {
 		}
 	}
 
+	passports = append(passports, currPassport)
+
 	return passports
+}
+
+func validateField(key string, val string) bool {
+	if key == "byr" {
+		return regexp.MatchString("^19[2-9|0][0-9]|200[0-2]$", val)
+	} else if key == "iyr" {
+		return regexp.MatchString("^201[0-9]|2020$", val)
+	} else if key == "eyr" {
+		return regexp.MatchString("^202[0-9]|2030$", val)
+	}
 }
 
 func howManyValid(passports []map[string]string) int {
@@ -51,10 +64,14 @@ func howManyValid(passports []map[string]string) int {
 		currValid := true
 
 		for _, key := range reqKeys {
-			if _, ok := pport[key]; !ok {
-				fmt.Println(pport, key)
+			if val, ok := pport[key]; !ok {
 				currValid = false
 				break
+			} else {
+				currValid = validateField(key, val)
+				if currValid == false {
+					break
+				}
 			}
 		}
 
