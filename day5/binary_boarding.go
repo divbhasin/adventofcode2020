@@ -73,4 +73,20 @@ func main() {
 	fmt.Println(max_id)
 
 	// part 2
+	id_map := make(map[int]int)
+	for _, id := range ids {
+		id_map[id] = 0
+	}
+
+	for _, id := range ids {
+		if _, ok := id_map[id+2]; ok {
+			if _, ok := id_map[id+1]; !ok {
+				fmt.Println(id + 1)
+			}
+		} else if _, ok := id_map[id-2]; ok {
+			if _, ok := id_map[id-1]; !ok {
+				fmt.Println(id - 1)
+			}
+		}
+	}
 }
