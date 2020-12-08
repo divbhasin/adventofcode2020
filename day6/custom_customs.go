@@ -8,6 +8,17 @@ import (
 	"strings"
 )
 
+func cleanMap(m map[string]int, total int) map[string]int {
+	tmpMap := make(map[string]int)
+	for k, v := range m {
+		if v == total {
+			tmpMap[k] = v
+		}
+	}
+
+	return tmpMap
+}
+
 func parseAns(fileName string) []map[string]int {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -20,18 +31,25 @@ func parseAns(fileName string) []map[string]int {
 
 	var all_ans []map[string]int
 
+	num_ppl := 0
+
 	for scanner.Scan() {
 		ans := scanner.Text()
 		if ans == "" {
-			all_ans = append(all_ans, curr_ans)
+			tmp_map := cleanMap(curr_ans, num_ppl)
+			all_ans = append(all_ans, tmp_map)
 			curr_ans = make(map[string]int)
+			num_ppl = 0
 		} else {
 			options := strings.Split(ans, "")
 			for _, o := range options {
-				if _, ok := curr_ans[o]; !ok {
-					curr_ans[o] = 0
+				if val, ok := curr_ans[o]; !ok {
+					curr_ans[o] = 1
+				} else {
+					curr_ans[o] = val + 1
 				}
 			}
+			num_ppl += 1
 		}
 	}
 
