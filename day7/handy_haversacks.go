@@ -26,10 +26,10 @@ func parseBagMappings(fileName string) map[string][]string {
 
 			for _, info := range neighbour_info {
 				adj_bag := strings.TrimSpace(info[2 : strings.LastIndex(info, "bag")-1])
-				if _, ok := adj[bag]; !ok {
-					adj[bag] = []string{adj_bag}
+				if _, ok := adj[adj_bag]; !ok {
+					adj[adj_bag] = []string{bag}
 				} else {
-					adj[bag] = append(adj[bag], adj_bag)
+					adj[adj_bag] = append(adj[adj_bag], bag)
 				}
 			}
 		}
@@ -38,15 +38,12 @@ func parseBagMappings(fileName string) map[string][]string {
 	return adj
 }
 
-func visit(visited map[string]bool, adj map[string][]string, col string, count *int) {
-	if col == "shiny gold" {
-		*count += 1
-		return
-	}
+func visit(visited map[string]bool, adj map[string][]string, col string) {
+	visited[col] = true
 
 	for _, adj_col := range adj[col] {
 		if !visited[adj_col] {
-			visit(visited, adj, adj_col, count)
+			visit(visited, adj, adj_col)
 		}
 	}
 }
@@ -60,10 +57,14 @@ func main() {
 		visited[key] = false
 	}
 
-	reachable := 0
-	for k, _ := range adj {
-		visited[k] = true
-		visit(visited, adj, k, &reachable)
+	visit(visited, adj, "shiny gold")
+
+	count := 0
+	for _, val := range visited {
+		if val {
+			count += 1
+		}
 	}
-	fmt.Println(reachable)
+
+	fmt.Println(count - 1)
 }
